@@ -1,0 +1,770 @@
+{
+  "info": {
+    "_postman_id": "7c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f",
+    "name": "Learn Fullstack API",
+    "description": "Requests for the auth, shipper, carrier and loads endpoints. Run the folders in order: Auth, Shippers, Carriers, Loads. IDs are saved as collection variables by the test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "shipperId", "value": "", "type": "string" },
+    { "key": "shipperId2", "value": "", "type": "string" },
+    { "key": "carrierId", "value": "", "type": "string" },
+    { "key": "carrierId2", "value": "", "type": "string" },
+    { "key": "loadId", "value": "", "type": "string" },
+    { "key": "loadId2", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register user",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Dispatcher\",\n  \"email\": \"dispatcher.demo@example.com\",\n  \"password\": \"DemoPass123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dispatcher.demo@example.com\",\n  \"password\": \"DemoPass123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('token', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - wrong password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dispatcher.demo@example.com\",\n  \"password\": \"WrongPass999\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 401', () => pm.response.to.have.status(401));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current user - no token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 401', () => pm.response.to.have.status(401));"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shippers",
+      "item": [
+        {
+          "name": "List shippers",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipper"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create shipper - Acme Logistics",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPerson\": \"Maria Lopez\",\n  \"contactPhone\": \"+1-555-0142\",\n  \"contactEmail\": \"maria@acme-logistics.example\",\n  \"company\": \"Acme Logistics\"\n}"
+            },
+            "url": "{{baseUrl}}/shipper"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('shipperId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create shipper - Globex Freight",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPerson\": \"Tom Reed\",\n  \"contactPhone\": \"+1-555-0199\",\n  \"contactEmail\": \"tom@globex-freight.example\",\n  \"company\": \"Globex Freight\"\n}"
+            },
+            "url": "{{baseUrl}}/shipper"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('shipperId2', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create shipper - missing company (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPerson\": \"No Company\"\n}"
+            },
+            "url": "{{baseUrl}}/shipper"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get shipper by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipper/{{shipperId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update shipper - phone",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPhone\": \"+1-555-0777\"\n}"
+            },
+            "url": "{{baseUrl}}/shipper/{{shipperId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get shipper - invalid id (400)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipper/not-a-uuid"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get shipper - not found (404)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipper/3f2b8c1e-6a4d-4f7b-9c2e-1a2b3c4d5e6f"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Carriers",
+      "item": [
+        {
+          "name": "List carriers",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/carrier"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create carrier - Swift Haulers",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mcNumber\": \"MC-0554721\",\n  \"contactPerson\": \"Raj Patel\",\n  \"contactPhone\": \"+1-555-0310\",\n  \"contactEmail\": \"dispatch@swifthaulers.example\",\n  \"name\": \"Swift Haulers\"\n}"
+            },
+            "url": "{{baseUrl}}/carrier"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('carrierId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create carrier - Red Ridge Transport",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mcNumber\": \"MC-0660193\",\n  \"contactPerson\": \"Lena Park\",\n  \"contactPhone\": \"+1-555-0456\",\n  \"contactEmail\": \"ops@redridge.example\",\n  \"name\": \"Red Ridge Transport\"\n}"
+            },
+            "url": "{{baseUrl}}/carrier"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('carrierId2', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create carrier - missing mcNumber (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPerson\": \"No MC\",\n  \"contactPhone\": \"+1-555-0000\",\n  \"name\": \"No MC Carrier\"\n}"
+            },
+            "url": "{{baseUrl}}/carrier"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get carrier by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/carrier/{{carrierId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update carrier - phone",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactPhone\": \"+1-555-0888\"\n}"
+            },
+            "url": "{{baseUrl}}/carrier/{{carrierId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get carrier - invalid id (400)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/carrier/not-a-uuid"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Loads",
+      "item": [
+        {
+          "name": "List loads",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/loads"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create load - Dallas to Atlanta (with carrier and dates)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origin\": \"Dallas, TX\",\n  \"destination\": \"Atlanta, GA\",\n  \"shipperId\": \"{{shipperId}}\",\n  \"carrierId\": \"{{carrierId}}\",\n  \"estimatedPickupDate\": \"2026-12-01T08:00:00.000Z\",\n  \"estimatedDeliveryDate\": \"2026-12-03T17:00:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/loads"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('loadId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create load - Chicago to Denver (no carrier, no dates)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origin\": \"Chicago, IL\",\n  \"destination\": \"Denver, CO\",\n  \"shipperId\": \"{{shipperId2}}\"\n}"
+            },
+            "url": "{{baseUrl}}/loads"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('loadId2', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create load - missing shipper (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origin\": \"Austin, TX\",\n  \"destination\": \"Phoenix, AZ\"\n}"
+            },
+            "url": "{{baseUrl}}/loads"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create load - origin too short (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origin\": \"A\",\n  \"destination\": \"Phoenix, AZ\",\n  \"shipperId\": \"{{shipperId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/loads"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get load by id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/loads/{{loadId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update load - destination and delivery date",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destination\": \"Savannah, GA\",\n  \"estimatedDeliveryDate\": \"2026-12-04T12:00:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update load - empty body (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update load - invalid date (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estimatedPickupDate\": \"not-a-date\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update load - not found (404)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destination\": \"Savannah, GA\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/3f2b8c1e-6a4d-4f7b-9c2e-1a2b3c4d5e6f"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status QUOTED to BOOKED",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"BOOKED\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status BOOKED to IN_TRANSIT",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status IN_TRANSIT to DELIVERED",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status DELIVERED to BOOKED (invalid, 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"BOOKED\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status QUOTED to DELIVERED on second load (invalid, 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId2}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status - unknown value (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LOST\"\n}"
+            },
+            "url": "{{baseUrl}}/loads/{{loadId2}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

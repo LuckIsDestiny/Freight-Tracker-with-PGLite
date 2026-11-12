@@ -4,6 +4,7 @@ import type {
   CreateLoadSchema,
   LoadIdParamSchema,
   UpdateLoadSchema,
+  UpdateLoadStatusSchema,
 } from "./loads.validation.js";
 
 export const getLoads = async (_req: Request, res: Response) => {
@@ -27,5 +28,12 @@ export const updateLoad = async (req: Request, res: Response) => {
   const { loadId } = req.params as LoadIdParamSchema;
   const data: UpdateLoadSchema = req.body;
   const load = await loadService.updateLoad(loadId, data);
+  res.status(200).json({ success: true, data: load });
+};
+
+export const updateLoadStatus = async (req: Request, res: Response) => {
+  const { loadId } = req.params as LoadIdParamSchema;
+  const data: UpdateLoadStatusSchema = req.body;
+  const load = await loadService.updateLoadStatus(loadId, data.status);
   res.status(200).json({ success: true, data: load });
 };

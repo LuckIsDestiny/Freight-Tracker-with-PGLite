@@ -42,6 +42,11 @@ export const loadIdParamSchema = z.object({
   loadId: z.uuid(),
 });
 
+export const updateLoadStatusSchema = z.object({
+  status: z.enum(loadStatus),
+});
+
+export type UpdateLoadStatusSchema = z.infer<typeof updateLoadStatusSchema>;
 export type LoadIdParamSchema = z.infer<typeof loadIdParamSchema>;
 export type CreateLoadSchema = z.infer<typeof createLoadSchema>;
 export type UpdateLoadSchema = z.infer<typeof updateLoadSchema>;

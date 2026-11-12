@@ -1,9 +1,12 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { z } from "zod";
 
 type ParamFormat = "body" | "params" | "query";
 
-export const validate = (schema: z.ZodType, format: ParamFormat = "body") => {
+export const validate = (
+  schema: z.ZodType,
+  format: ParamFormat = "body",
+): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       if (format === "query") {
@@ -11,6 +14,7 @@ export const validate = (schema: z.ZodType, format: ParamFormat = "body") => {
       } else {
         req[format] = schema.parse(req[format]);
       }
+      next();
     } catch (err) {
       next(err);
     }

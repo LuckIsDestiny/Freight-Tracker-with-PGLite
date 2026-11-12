@@ -26,7 +26,7 @@ CREATE TABLE
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     "contactPerson" TEXT NOT NULL,
     "contactPhone" TEXT,
-    "contactEMAIL" TEXT,
+    "contactEmail" TEXT,
     "company" TEXT NOT NULL,
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -38,7 +38,7 @@ CREATE TABLE
     "mcNumber" TEXT NOT NULL,
     "contactPerson" TEXT NOT NULL,
     "contactPhone" TEXT NOT NULL,
-    "contactEMAIL" TEXT,
+    "contactEmail" TEXT,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP

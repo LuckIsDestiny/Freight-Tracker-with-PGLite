@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { role } from "../../types/express.d.js";
+
+export const role = ["USER", "ADMIN"] as const;
+
+export type Role = (typeof role)[number];
 
 export const registerSchema = z.object({
   name: z.string().trim().min(2),

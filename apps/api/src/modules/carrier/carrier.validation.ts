@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const createCarrierSchema = z.object({
+  mcNumber: z.string().trim().min(9).max(15),
   contactPerson: z.string().trim().min(2),
   contactPhone: z.string().trim().min(2),
   contactEmail: z.string().trim().min(2).optional(),
@@ -11,6 +12,7 @@ export const updateCarrierSchema = createCarrierSchema.partial();
 
 export const carrierSchema = z.object({
   id: z.uuid(),
+  mcNumber: z.string(),
   contactPerson: z.string(),
   contactPhone: z.string(),
   contactEmail: z.string().optional(),

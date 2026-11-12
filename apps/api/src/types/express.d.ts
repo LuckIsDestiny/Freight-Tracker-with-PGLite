@@ -1,8 +1,6 @@
+import type { Role } from "../modules/auth/auth.validation.ts";
+
 export {};
-
-export const role = ["USER", "ADMIN"] as const;
-
-export type Role = (typeof role)[number];
 
 export type AuthUser = {
   id: string;
