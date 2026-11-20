@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type React from "react";
 import { register } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
 import {
@@ -7,6 +8,7 @@ import {
   Form,
   FormButton,
   FormContainer,
+  FormError,
   FormHeader,
   FormInput,
   FormLabel,
@@ -25,13 +27,15 @@ export const RegisterPage = () => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
-    register({ name, email, password })
-      .then(() => navigate("/login"))
-      .catch((err) => {
-        setPassword("");
-        setError(err.message);
-        setIsSubmitting(false);
-      });
+    try {
+      await register({ name, email, password });
+      navigate("/login");
+    } catch (err) {
+      setPassword("");
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -67,7 +71,7 @@ export const RegisterPage = () => {
         <FormButton type="submit" disabled={isSubmitting}>
           Register
         </FormButton>
-        {error && <p>{error}</p>}
+        {error && <FormError>{error}</FormError>}
       </Form>
       <AlternateButtonContainer>
         <p>Already Registered?</p>

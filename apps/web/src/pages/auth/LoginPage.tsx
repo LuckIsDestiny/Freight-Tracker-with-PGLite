@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -7,6 +8,7 @@ import {
   Form,
   FormButton,
   FormContainer,
+  FormError,
   FormHeader,
   FormInput,
   FormLabel,
@@ -19,20 +21,21 @@ export const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
-    login({ email, password })
-      .then(() => navigate("/"))
-      .catch((err) => {
-        setPassword("");
-        setError(err.message);
-        setIsSubmitting(false);
-      });
+    try {
+      await login({ email, password });
+      navigate("/");
+    } catch (err) {
+      setPassword("");
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -60,7 +63,7 @@ export const LoginPage = () => {
         <FormButton type="submit" disabled={isSubmitting}>
           Login
         </FormButton>
-        {error && <p>{error}</p>}
+        {error && <FormError>{error}</FormError>}
       </Form>
       <AlternateButtonContainer>
         <p>New User?</p>
